@@ -5,6 +5,7 @@ import com.nitesh.quizapp.dao.QuizDao;
 import com.nitesh.quizapp.model.Question;
 import com.nitesh.quizapp.model.QuestionWrapper;
 import com.nitesh.quizapp.model.Quiz;
+import com.nitesh.quizapp.model.Response;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
@@ -44,5 +45,18 @@ public class QuizService {
             questionForUser.add(qw);
         }
         return new ResponseEntity<>(questionForUser, HttpStatus.OK);
+    }
+
+    public ResponseEntity<Integer> calculateResult(Integer id, List<Response> responses) {
+        Quiz quiz = quizDao.findById(id).get(); // to avoid Optional we use get()
+        List<Question>questions = quiz.getQuestions();
+        int right = 0;
+        int i = 0;
+        for(Response response : responses){
+            if(response.getResponse().equals(questions.get(i).getRightAnswer()))
+                right++;
+            i++;
+        }
+        return new ResponseEntity<>(right, HttpStatus.OK);
     }
 }
